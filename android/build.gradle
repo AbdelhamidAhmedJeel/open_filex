@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.12.2'
+        classpath 'com.android.tools.build:gradle:8.2.2'
     }
 }
 
@@ -28,16 +28,44 @@ android {
         namespace "com.crazecoder.openfile"
     }
 
-    compileSdkVersion 36
+    compileSdk 34
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Enable 16KB page size support
+        ndk {
+            // Only include architectures that support 16KB pages
+            abiFilters 'arm64-v8a', 'x86_64'
+        }
     }
-    lintOptions {
+
+    // Updated lint options (lintOptions is deprecated)
+    lint {
         disable 'InvalidPackage'
     }
+
+    // Add build features for 16KB page size compatibility
+    buildFeatures {
+        buildConfig true
+    }
+
+    // Packaging options to handle 16KB page alignment
+    packagingOptions {
+        // Ensure native libraries are properly aligned for 16KB pages
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
+    // Compile options for better compatibility
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
+
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
 }
